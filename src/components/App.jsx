@@ -1,45 +1,28 @@
-import React, { lazy, Suspense } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Switch,
-  Router,
-} from 'react-router-dom';
-import Cast from '../pages/Cast/Cast';
-import Reviews from '../pages/Reviews';
+import { Route, Routes } from 'react-router-dom';
+import { SharedLayout } from './SharedLayout/SharedLayout';
+import { Container } from './App.styled';
+import { lazy } from 'react';
 
-const Home = lazy(() => import('./components/Home'));
-const Movies = lazy(() => import('./components/Movies'));
-const MovieDetails = lazy(() => import('./components/MovieDetails'));
+const Home = lazy(() => import('../pages/Home'));
+const Movies = lazy(() => import('../pages/Movies'));
+const MovieDetails = lazy(() => import('../pages/MovieDetails'));
+const Cast = lazy(() => import('./Cast/Cast'));
+const Reviews = lazy(() => import('./Reviews/Reviews'));
 
-function App() {
+export const App = () => {
   return (
-    <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/movies">Search Movies</Link>
-            </li>
-          </ul>
-        </nav>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Switch>
-            <Route path="/" exact component={Home} />
-            <Route path="/movies" exact component={Movies} />
-            <Route path="/movies/:movieId" component={MovieDetails} />
-            <Route path="/movies/:movieId/cast" component={Cast} />
-            <Route path="/movies/:movieId/reviews" component={Reviews} />
-            {/* <Route path="*" element={<NotFound />} /> */}
-          </Switch>
-        </Suspense>
-      </div>
-    </Router>
+    <Container>
+      <Routes>
+        <Route path="/" element={<SharedLayout />}>
+          <Route index element={<Home />} />
+          <Route path="movies" element={<Movies />} />
+          <Route path="movies/:movieId" element={<MovieDetails />}>
+            <Route path="cast" element={<Cast />} />
+            <Route path="reviews" element={<Reviews />} />
+          </Route>
+          <Route path="*" element={<Home />} />
+        </Route>
+      </Routes>
+    </Container>
   );
-}
-
-export default App;
+};

@@ -1,26 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import api from '../api/api';
+import React, { useEffect, useState } from 'react';
+import MoviesList from 'components/MoviesList/MoviesList';
+import { Loader } from 'components/Loader/Loader';
+import { fetchData } from 'services/fetchMovie';
+import Notiflix from 'notiflix';
 
-function Home() {
-  const [trendingMovies, setTrendingMovies] = useState([]);
+const pathUrl = 'trending/all/day';
+
+const Home = () => {
+  const [movies, setMovies] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    api
-      .get('/trending/movie/day')
-      .then(response => setTrendingMovies(response.data.results))
-      .catch(error => console.error(error));
+    setIsLoading(true);
+    fetchData(pathUrl)
+      .then(res => {
+        return setMovies(res.results);
+      })
+      .catch(error => {
+        error && Notiflix.Notify.failure(`Sorry, ${error}`);
+      })
+      .finally(setIsLoading(false));
   }, []);
 
   return (
     <div>
-      <h1>Trending Movies</h1>
-      <ul>
-        {trendingMovies.map(movie => (
-          <li key={movie.id}>{movie.title}</li>
-        ))}
-      </ul>
+      <h2>Trending Today</h2>
+      <MoviesList movies={movies} />
+      {isLoading && <Loader />}
     </div>
   );
-}
+};
 
 export default Home;
