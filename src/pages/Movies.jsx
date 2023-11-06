@@ -12,6 +12,11 @@ function Movies() {
       .catch(error => console.error(error));
   };
 
+  // const { movieId } = useParams();
+  // useEffect(() => {
+  //   if (!movieId) return;
+  // }, [movieId]);
+
   return (
     <div>
       <h1>Movies</h1>

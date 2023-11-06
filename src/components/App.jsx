@@ -1,7 +1,13 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
-import Cast from './Cast/Cast';
-import Reviews from './Reviews/Reviews';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch,
+  Router,
+} from 'react-router-dom';
+import Cast from '../pages/Cast/Cast';
+import Reviews from '../pages/Reviews';
 
 const Home = lazy(() => import('./components/Home'));
 const Movies = lazy(() => import('./components/Movies'));
@@ -26,8 +32,9 @@ function App() {
             <Route path="/" exact component={Home} />
             <Route path="/movies" exact component={Movies} />
             <Route path="/movies/:movieId" component={MovieDetails} />
-            <Route path="//movies/:movieId/cast" component={Cast} />
+            <Route path="/movies/:movieId/cast" component={Cast} />
             <Route path="/movies/:movieId/reviews" component={Reviews} />
+            {/* <Route path="*" element={<NotFound />} /> */}
           </Switch>
         </Suspense>
       </div>
