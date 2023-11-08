@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SearchForm from 'components/SearchForm/SearchForm';
 import { useSearchParams } from 'react-router-dom';
-import { fetchData } from 'services/fetchMovies';
+import { fetchData } from 'services/fetchMovie';
 import MoviesList from 'components/MoviesList/MoviesList';
 import { Loader } from 'components/Loader/Loader';
 import Notiflix from 'notiflix';
