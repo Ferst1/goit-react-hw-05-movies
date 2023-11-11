@@ -12,7 +12,7 @@ export const Header = styled.header`
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 8px 0;
+  padding: 8px 20px;
   margin-bottom: 16px;
   border-bottom: 2px solid blue;
   box-shadow: 0px 3px 10px blue;
