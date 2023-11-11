@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { fetchMovies } from 'API';
 import MoviesList from 'components/MoviesList/MoviesList';
-import { Loader } from 'components/Loader/Loader';
-import { fetchData } from 'services/fetchMovie';
-import Notiflix from 'notiflix';
-
-const pathUrl = 'trending/all/day';
+import Loader from 'components/Loader/Loader';
+import Error from 'components/Error/Error';
 
 const Home = () => {
   const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsloading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setIsLoading(true);
-    fetchData(pathUrl)
-      .then(res => {
-        return setMovies(res.results);
+    setIsloading(true);
+    fetchMovies()
+      .then(data => {
+        setMovies(data.results);
       })
       .catch(error => {
-        error && Notiflix.Notify.failure(`Sorry, ${error}`);
+        setError(error.message);
       })
-      .finally(setIsLoading(false));
+      .finally(setIsloading(false));
   }, []);
 
   return (
-    <div>
-      <h2>Trending Today</h2>
-      <MoviesList movies={movies} />
+    <>
+      <h1>Trending Today</h1>
       {isLoading && <Loader />}
-    </div>
+      {error && <Error error={error} />}
+      <MoviesList movies={movies} />
+    </>
   );
 };
 

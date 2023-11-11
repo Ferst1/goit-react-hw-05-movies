@@ -1,16 +1,23 @@
-import { Watch } from 'react-loader-spinner';
+import { Overlay } from './Loader.styled';
+import { Oval } from 'react-loader-spinner';
 
-export function Loader() {
+const Loader = () => {
   return (
-    <Watch
-      height="80"
-      width="80"
-      radius="48"
-      color="#4fa94d"
-      ariaLabel="watch-loading"
-      wrapperStyle={{}}
-      wrapperClassName=""
-      visible={true}
-    />
+    <Overlay>
+      <Oval
+        height={80}
+        width={80}
+        color="indigo"
+        wrapperStyle={{}}
+        wrapperClass=""
+        visible={true}
+        ariaLabel="oval-loading"
+        secondaryColor="gray"
+        strokeWidth={2}
+        strokeWidthSecondary={2}
+      />
+    </Overlay>
   );
-}
+};
+
+export default Loader;

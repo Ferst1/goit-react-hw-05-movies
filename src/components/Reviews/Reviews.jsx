@@ -1,42 +1,49 @@
-import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchData } from 'services/fetchMovie';
-import { Loader } from 'components/Loader/Loader';
-import { ItemList } from './Reviews.styled';
-import Notiflix from 'notiflix';
+import { useEffect, useState } from 'react';
+import { fetchMovieReview } from 'API';
+import Error from 'components/Error/Error';
+import NotFound from 'components/NotFound/NotFound';
+import Loader from 'components/Loader/Loader';
+import { ReviewsWrap, ReviewsList, ReviewAutor } from './Reviews.styled';
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsloading] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
   const { movieId } = useParams();
-  const [isLoading, setIsLoading] = useState(false);
-  const pathUrl = `movie/${movieId}/reviews`;
 
   useEffect(() => {
-    setIsLoading(true);
-    fetchData(pathUrl)
-      .then(res => {
-        return setReviews(res.results);
+    if (!movieId) return;
+    fetchMovieReview(movieId)
+      .then(({ results }) => {
+        if (results.length === 0) {
+          setIsEmpty(true);
+          return;
+        }
+        setReviews(results);
       })
       .catch(error => {
-        error && Notiflix.Notify.failure(`Sorry, ${error}`);
+        setError(error.message);
       })
-      .finally(setIsLoading(false));
-  }, [pathUrl]);
+      .finally(setIsloading(false));
+  }, [movieId]);
+
   return (
-    <div>
-      {reviews.length === 0 && <p>We don't have any reviews</p>}
-      {reviews.length > 0 && (
-        <ItemList>
-          {reviews.map(review => (
+    <ReviewsWrap>
+      {isLoading && <Loader />}
+      {isEmpty && <NotFound />}
+      {error && <Error error={error} />}
+      <ReviewsList>
+        {reviews &&
+          reviews.map(review => (
             <li key={review.id}>
-              <h5>Author: {review.author}</h5>
-              <p>{review.content}</p>
+              <ReviewAutor>{review.author}</ReviewAutor>
+              {review.content}
             </li>
           ))}
-        </ItemList>
-      )}
-      {isLoading && <Loader />}
-    </div>
+      </ReviewsList>
+    </ReviewsWrap>
   );
 };
 

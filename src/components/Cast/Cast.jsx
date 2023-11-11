@@ -1,55 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { Loader } from 'components/Loader/Loader';
 import { useParams } from 'react-router-dom';
-import { fetchData } from 'services/fetchMovie';
-import { CardList } from './Card.styled';
-import Notiflix from 'notiflix';
-
-const defaultImg =
-  'https://ireland.apollo.olxcdn.com/v1/files/0iq0gb9ppip8-UA/image;s=1000x700';
+import { useEffect, useState } from 'react';
+import { fetchMovieCast } from 'API';
+import NotFound from 'components/NotFound/NotFound';
+import Error from 'components/Error/Error';
+import Loader from 'components/Loader/Loader';
+import {
+  CastWrap,
+  CastList,
+  CastListItem,
+  CastImage,
+  CastName,
+} from './Cast.styled';
 
 const Cast = () => {
-  const [cast, setCast] = useState([]);
+  const [casts, setCasts] = useState([]);
+  const [isLoading, setIsloading] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
+  const [error, setError] = useState(null);
   const { movieId } = useParams();
-  const [isLoading, setIsLoading] = useState(false);
-  const pathUrl = `movie/${movieId}/credits`;
+  const defaultImg = `https://i.pinimg.com/564x/01/0c/b2/010cb2c89b8924d966b4369c0142a6cd.jpg`;
 
   useEffect(() => {
-    setIsLoading(true);
-    fetchData(pathUrl)
-      .then(res => {
-        return setCast(res.cast);
+    if (!movieId) return;
+    fetchMovieCast(movieId)
+      .then(({ cast }) => {
+        if (cast.length === 0) {
+          setIsEmpty(true);
+          return;
+        }
+        setCasts(cast);
       })
       .catch(error => {
-        error && Notiflix.Notify.failure(`Sorry, ${error}`);
+        setError(error.message);
       })
-      .finally(setIsLoading(false));
-  }, [pathUrl]);
+      .finally(setIsloading(false));
+  }, [movieId]);
+
   return (
-    <div>
-      {cast.length > 0 && (
-        <CardList>
-          {cast.map(cast => (
-            <li key={cast.id}>
-              <img
+    <CastWrap>
+      {isLoading && <Loader />}
+      {isEmpty && <NotFound />}
+      {error && <Error error={error} />}
+      <CastList>
+        {casts &&
+          casts.map(cast => (
+            <CastListItem key={cast.id}>
+              <CastImage
                 src={
                   cast.profile_path
-                    ? `https://image.tmdb.org/t/p/w500/${cast.profile_path}`
+                    ? `https://image.tmdb.org/t/p/w200${cast.profile_path}`
                     : defaultImg
                 }
-                alt={cast.name}
-                width="140"
-                height="210"
+                width={250}
+                alt={`${cast.name}`}
               />
-              <h4>{cast.name}</h4>
-              <p>Character: {cast.character}</p>
-            </li>
+              <CastName>{cast.name}</CastName>
+            </CastListItem>
           ))}
-        </CardList>
-      )}
-      {cast.length === 0 && <p>Sorry, there are no results</p>}
-      {isLoading && <Loader />}
-    </div>
+      </CastList>
+    </CastWrap>
   );
 };
 
